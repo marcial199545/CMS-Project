@@ -1,52 +1,63 @@
+import { encrypt } from "../utils/security";
 export default (sequelize, { BOOLEAN, STRING, UUID, UUIDV4 }) => {
-    const User = sequelize.define("User", {
-        id: {
-            primaryKey: true,
-            allowNull: false,
-            type: UUID,
-            defaultValue: UUIDV4()
-        },
-        username: {
-            type: STRING,
-            allowNull: false,
-            unique: true,
-            validate: {
-                isAlphanumeric: {
-                    args: true,
-                    msg: "The user just accepts alphanumeric characters"
-                },
-                len: {
-                    args: [4, 20],
-                    msg: "User name length must be between 4-20 characters"
+    const User = sequelize.define(
+        "User",
+        {
+            id: {
+                primaryKey: true,
+                allowNull: false,
+                type: UUID,
+                defaultValue: UUIDV4()
+            },
+            username: {
+                type: STRING,
+                allowNull: false,
+                unique: true,
+                validate: {
+                    isAlphanumeric: {
+                        args: true,
+                        msg: "The user just accepts alphanumeric characters"
+                    },
+                    len: {
+                        args: [4, 20],
+                        msg: "User name length must be between 4-20 characters"
+                    }
                 }
+            },
+            password: {
+                type: STRING,
+                allowNull: false
+            },
+            email: {
+                type: STRING,
+                allowNull: false,
+                unique: true,
+                validate: {
+                    isEmail: {
+                        args: true,
+                        msg: "invalid email"
+                    }
+                }
+            },
+            privilege: {
+                type: STRING,
+                allowNull: false,
+                defaultValue: "user"
+            },
+            active: {
+                type: BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
         },
-        password: {
-            type: STRING,
-            allowNull: false
-        },
-        email: {
-            type: STRING,
-            allowNull: false,
-            unique: true,
-            validate: {
-                isEmail: {
-                    args: true,
-                    msg: "invalid email"
+        {
+            hooks: {
+                beforeCreate: user => {
+                    user.password = encrypt(user.password);
                 }
             }
-        },
-        privilege: {
-            type: STRING,
-            allowNull: false,
-            defaultValue: "user"
-        },
-        active: {
-            type: BOOLEAN,
-            allowNull: false,
-            defaultValue: false
         }
-    });
+    );
     User.associate = models => {
         User.hasMany(models.Post, {
             foreignKey: {

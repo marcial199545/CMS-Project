@@ -5,10 +5,14 @@
         "dialect": "postgres",
         "database": "cms",
         "username": "marcial",
-        "password": "picOLO19957"
+        "password": "picOLO19957",
+        "options": {
+            "alter": true,
+            "force": false
+        }
     },
     "security": {
-        "secretKey": "some-secret-key",
+        "secretKey": "Gr4QLCMS",
         "expiresIn": "7d"
     }
 }
